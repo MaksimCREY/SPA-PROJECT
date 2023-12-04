@@ -46,3 +46,19 @@ h1 {
     border-radius: 3px;
     cursor: pointer;
 }
+
+
+@media screen and (max-width: 600px) {
+    #app {
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    .task {
+        flex-direction: column;
+    }
+
+    .task span {
+        margin-bottom: 10px;
+    }
+}
