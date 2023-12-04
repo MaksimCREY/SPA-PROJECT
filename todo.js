@@ -1,5 +1,5 @@
-// todo.js
-function initializeTodo() {
+document.addEventListener('DOMContentLoaded', function () {
+    const app = document.getElementById('app');
     const todoList = document.getElementById('todo-list');
     const todoForm = document.getElementById('todo-form');
     const newTaskInput = document.getElementById('new-task');
@@ -9,13 +9,29 @@ function initializeTodo() {
         taskItem.className = 'task';
         taskItem.innerHTML = `
             <span>${taskText}</span>
+            <button class="edit-task">Edit</button>
             <button class="delete-task">Delete</button>
         `;
         todoList.appendChild(taskItem);
+        saveTasksToLocalStorage();
     }
 
     function deleteTask(taskItem) {
         todoList.removeChild(taskItem);
+        saveTasksToLocalStorage();
+    }
+
+    function saveTasksToLocalStorage() {
+        const tasks = Array.from(document.querySelectorAll('.task span')).map(task => task.innerText);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function loadTasksFromLocalStorage() {
+        const storedTasks = localStorage.getItem('tasks');
+        if (storedTasks) {
+            const tasks = JSON.parse(storedTasks);
+            tasks.forEach(task => addTask(task));
+        }
     }
 
     todoForm.addEventListener('submit', function (e) {
@@ -29,16 +45,24 @@ function initializeTodo() {
 
     todoList.addEventListener('click', function (e) {
         const target = e.target;
+        const taskItem = target.closest('.task');
+
         if (target.classList.contains('delete-task')) {
-            const taskItem = target.closest('.task');
             deleteTask(taskItem);
+        } else if (target.classList.contains('edit-task')) {
+            editTask(taskItem);
         }
     });
-}
 
-// Экспортируем функцию для использования в других файлах
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = {
-        initializeTodo
-    };
-}
+    function editTask(taskItem) {
+        const span = taskItem.querySelector('span');
+        const newText = prompt('Edit task:', span.innerText);
+        if (newText !== null) {
+            span.innerText = newText;
+            saveTasksToLocalStorage();
+        }
+    }
+
+    
+    loadTasksFromLocalStorage();
+});
